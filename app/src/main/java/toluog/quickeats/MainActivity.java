@@ -1,5 +1,6 @@
 package toluog.quickeats;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void restaurantClicked(Restaurant restaurant) {
-
+        Intent intent = new Intent(MainActivity.this, TablesActivity.class);
+        startActivity(intent);
     }
 }
