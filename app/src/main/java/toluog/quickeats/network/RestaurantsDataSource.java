@@ -1,11 +1,10 @@
-package toluog.quickeats;
+package toluog.quickeats.network;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -19,19 +18,14 @@ import javax.annotation.Nullable;
 
 import toluog.quickeats.model.Restaurant;
 
-public class RestaurantsDataSource {
+public class RestaurantsDataSource extends DataSource<Restaurant> {
 
     private final String TAG = RestaurantsDataSource.class.getSimpleName();
-    private FirebaseFirestore db;
     private CollectionReference docRef;
-    private MutableLiveData<List<Restaurant>> liveRestaurants;
-    private List<Restaurant> restaurants;
 
     RestaurantsDataSource() {
-        db = FirebaseFirestore.getInstance();
+        super();
         docRef = db.collection("restaurants");
-        restaurants = new ArrayList<>();
-        liveRestaurants = new MutableLiveData<>();
         initData();
     }
 
@@ -47,14 +41,10 @@ public class RestaurantsDataSource {
                 for (QueryDocumentSnapshot doc : snapshots) {
                     Restaurant r = doc.toObject(Restaurant.class);
                     r.setId(doc.getId());
-                    restaurants.add(r);
-                    liveRestaurants.postValue(restaurants);
+                    dataList.add(r);
+                    liveData.postValue(dataList);
                 }
             }
         });
-    }
-
-    public LiveData<List<Restaurant>> getRestaurants() {
-        return liveRestaurants;
     }
 }

@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void restaurantClicked(Restaurant restaurant) {
         Intent intent = new Intent(MainActivity.this, TablesActivity.class);
+        intent.putExtra("tableId", restaurant.getId());
         startActivity(intent);
     }
 }

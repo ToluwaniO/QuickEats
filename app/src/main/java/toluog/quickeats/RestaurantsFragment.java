@@ -82,9 +82,9 @@ public class RestaurantsFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
         recyclerView.setAdapter(adapter);
 
-        viewModel.getRestaurants().observe(this, new Observer<List<Restaurant>>() {
+        viewModel.getRestaurants().observe(this, new Observer<List>() {
             @Override
-            public void onChanged(@Nullable List<Restaurant> restaurants) {
+            public void onChanged(@Nullable List restaurants) {
                 updateUi(restaurants);
             }
         });
@@ -107,7 +107,7 @@ public class RestaurantsFragment extends Fragment {
         mListener = null;
     }
 
-    private void updateUi(List<Restaurant> restaurants) {
+    private void updateUi(List restaurants) {
         this.restaurants.clear();
         this.restaurants.addAll(restaurants);
         adapter.notifyDataSetChanged();
