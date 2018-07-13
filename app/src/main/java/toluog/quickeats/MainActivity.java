@@ -53,7 +53,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_frame,
-                RestaurantsFragment.newInstance(2)).commit();
+                RestaurantsFragment.Companion.newInstance(2)).commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!FirebaseManager.isSignedIn()) {
+            FirebaseManager.startSignIn(this);
+        }
     }
 
     @Override
@@ -116,7 +124,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void restaurantClicked(Restaurant restaurant) {
         Intent intent = new Intent(MainActivity.this, TablesActivity.class);
-        intent.putExtra("tableId", restaurant.getId());
+        intent.putExtra("restaurant", restaurant);
         startActivity(intent);
     }
 }
