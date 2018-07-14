@@ -57,7 +57,7 @@ class OrderItemFragment: DialogFragment() {
     private fun updateOrder() {
         val order = Order().apply {
             name = itemName.text.toString()
-            quantity = itemPrice.text.toString().toInt()
+            quantity = itemQuantity.text.toString().toInt()
             price = itemPrice.text.toString().toDouble()
         }
         listener?.onDone(order)
