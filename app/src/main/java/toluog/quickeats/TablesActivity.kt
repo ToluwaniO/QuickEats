@@ -19,6 +19,10 @@ import kotlinx.android.synthetic.main.activity_tables.*
 import kotlinx.android.synthetic.main.table_item_layout.*
 import toluog.quickeats.model.Restaurant
 import toluog.quickeats.model.Table
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.DividerItemDecoration.HORIZONTAL
+import android.support.v7.widget.DividerItemDecoration.VERTICAL
+
 
 class TablesActivity : AppCompatActivity() {
 
@@ -37,6 +41,8 @@ class TablesActivity : AppCompatActivity() {
         Log.d(TAG, restaurant.id)
 
         adapter = TablesAdapter()
+        val itemDecor = DividerItemDecoration(this, VERTICAL)
+        table_recycler.addItemDecoration(itemDecor)
         table_recycler.adapter = adapter
         table_recycler.layoutManager = LinearLayoutManager(this)
         viewModel = ViewModelProviders.of(this, TableViewModelFactory(restaurant.id))
@@ -51,20 +57,6 @@ class TablesActivity : AppCompatActivity() {
             }
             adapter.notifyDataSetChanged()
         })
-//
-//        search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                if(newText != null) {
-//                    adapter.search(newText)
-//                }
-//                return true
-//            }
-//
-//        })
     }
 
     fun openTable(table: Table) {
@@ -96,10 +88,13 @@ class TablesActivity : AppCompatActivity() {
 
             fun updateUi(table: Table) {
                 table_name.text = "TABLE " + table.id
-                if (table.isOccupied) {
+                if (table.occupants.isNotEmpty()) {
                     occupied_state.text = "OCCUPIED"
                 } else {
                     occupied_state.text = "FREE"
+                }
+                table.orders.forEach {
+                    table.total += it.quantity * it.price
                 }
                 total_text.text = "$" + table.total
 

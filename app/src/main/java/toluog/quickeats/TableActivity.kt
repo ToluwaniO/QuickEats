@@ -10,9 +10,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bumptech.glide.Glide
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_table.*
@@ -22,6 +20,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
+import toluog.quickeats.R.id.*
 import toluog.quickeats.model.Order
 import toluog.quickeats.model.Restaurant
 import toluog.quickeats.model.Table
@@ -43,11 +42,6 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
         setContentView(R.layout.activity_table)
         restaurant = intent.extras.get("restaurant") as Restaurant
         tableId = intent.getStringExtra("tableId")
-
-        col_bar_layout.title = restaurant.name
-        col_bar_layout.setExpandedTitleColor(resources.getColor(android.R.color.transparent))
-        col_bar_layout.setCollapsedTitleTextColor(ContextCompat.getColor(this,
-                android.R.color.white))
         occupants_recycler.layoutManager = LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL, false)
         occupants_recycler.adapter = occupantAdapter
@@ -56,32 +50,6 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
         orders_recycler.adapter = ordersAdapter
 
         Glide.with(this).load(restaurant.imageUrl).into(restaurant_logo)
-
-        main_fab.setOnClickListener {
-            if(fabExpanded) {
-                add_order_fab.visibility = View.GONE
-                join_fab.visibility = View.GONE
-                fabExpanded = false
-                main_fab.setImageResource(R.drawable.ic_add )
-            } else {
-                add_order_fab.visibility = View.VISIBLE
-                join_fab.visibility = View.VISIBLE
-                fabExpanded = true
-                main_fab.setImageResource(R.drawable.ic_close)
-            }
-        }
-
-        add_order_fab.setOnClickListener {
-            OrderItemFragment().show(supportFragmentManager, null)
-        }
-
-        join_fab.setOnClickListener {
-            Log.d(TAG, "Join fab clicked")
-            val user = FirebaseManager.user()
-            viewModel?.updateOccupants(restaurant.id, tableId, table.apply {
-                this?.occupants?.add(user)
-            })
-        }
 
         pay_now.setOnClickListener {
             payNow()
@@ -97,6 +65,28 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
             Log.d(TAG, "This $table found")
             updateUi(table)
         })
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.table_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            android.R.id.home -> onBackPressed()
+            R.id.menu_add_occupant -> {
+                Log.d(TAG, "Join fab clicked")
+                val user = FirebaseManager.user()
+                viewModel?.updateOccupants(restaurant.id, tableId, table.apply {
+                    this?.occupants?.add(user)
+                })
+            }
+            R.id.menu_add_order -> {
+                OrderItemFragment().show(supportFragmentManager, null)
+            }
+        }
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -128,7 +118,6 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
     private fun updateUi(table: Table?) {
         this.table = table
         if(table == null) return
-        main.visibility = View.VISIBLE
         table_name.text = "TABLE ${table.id}"
         occupantAdapter.update(table.occupants)
         ordersAdapter.update(table.orders)

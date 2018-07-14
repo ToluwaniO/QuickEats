@@ -22,8 +22,7 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".TableActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".TableActivity"/>
         <activity android:name=".CardsActivity" />
         <activity android:name=".AddCardActivity"></activity>
     </application>
