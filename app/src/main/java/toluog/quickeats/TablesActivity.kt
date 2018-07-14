@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,9 +24,6 @@ class TablesActivity : AppCompatActivity() {
 
     private val TAG = TablesActivity::class.java.simpleName
 
-    @BindView(R.id.table_recycler)
-    internal var recyclerView: RecyclerView? = null
-
     private lateinit var restaurant: Restaurant
     private val tables = arrayListOf<Table>()
     private lateinit var viewModel: TablesViewModel
@@ -34,7 +32,6 @@ class TablesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tables)
-        ButterKnife.bind(this)
 
         restaurant = intent.extras.get("restaurant") as Restaurant
         Log.d(TAG, restaurant.id)
@@ -54,6 +51,20 @@ class TablesActivity : AppCompatActivity() {
             }
             adapter.notifyDataSetChanged()
         })
+//
+//        search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                return true
+//            }
+//
+//            override fun onQueryTextChange(newText: String?): Boolean {
+//                if(newText != null) {
+//                    adapter.search(newText)
+//                }
+//                return true
+//            }
+//
+//        })
     }
 
     fun openTable(table: Table) {
@@ -64,7 +75,7 @@ class TablesActivity : AppCompatActivity() {
     }
 
     internal inner class TablesAdapter : RecyclerView.Adapter<TablesAdapter.ViewHolder>() {
-
+        private val adapterList = arrayListOf<Table>()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val v = LayoutInflater.from(parent.context)
                     .inflate(R.layout.table_item_layout, parent, false)
@@ -78,6 +89,7 @@ class TablesActivity : AppCompatActivity() {
         override fun getItemCount(): Int {
             return tables.size
         }
+
 
         inner class ViewHolder(override val containerView: View)
             : RecyclerView.ViewHolder(containerView), LayoutContainer {

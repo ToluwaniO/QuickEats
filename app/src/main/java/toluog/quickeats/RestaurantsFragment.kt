@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +32,7 @@ class RestaurantsFragment : Fragment() {
     private var mColumnCount = 2
     private var mListener: OnListFragmentInteractionListener? = null
 
+    private val TAG = RestaurantsFragment::class.java.simpleName
     private var restaurants = arrayListOf<Restaurant>()
     private lateinit var viewModel: RestaurantsViewModel
     private lateinit var adapter: RestaurantRecyclerViewAdapter
@@ -56,7 +59,26 @@ class RestaurantsFragment : Fragment() {
         r_recycler.layoutManager = GridLayoutManager(view.context, 2)
         r_recycler.adapter = adapter
 
-        viewModel.restaurants.observe(this, Observer { restaurants -> updateUi(restaurants) })
+        search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText != null) {
+                    Log.d(TAG, newText)
+                    adapter.search(newText, restaurants)
+                    return true
+                }
+                return false
+            }
+
+        })
+
+
+        viewModel.restaurants.observe(this, Observer { restaurants ->
+            updateUi(restaurants)
+        })
     }
 
     override fun onAttach(context: Context?) {
@@ -64,7 +86,7 @@ class RestaurantsFragment : Fragment() {
         if (context is OnListFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException(context?.toString() + " must implement OnListFragmentInteractionListener")
         }
     }
 
@@ -81,7 +103,7 @@ class RestaurantsFragment : Fragment() {
                 this.restaurants.add(r)
             }
         }
-        adapter.notifyDataSetChanged()
+        adapter.update(restaurants)
     }
 
     /**
