@@ -31,9 +31,7 @@ class RestaurantRecyclerViewAdapter(private val restaurants: ArrayList<Restauran
         holder.bind(restaurants[position], mListener)
     }
 
-    override fun getItemCount(): Int {
-        return restaurants.size
-    }
+    override fun getItemCount() = restaurants.size
 
     fun update(newList: List<*>?) {
         Log.d(TAG, "size = ${newList?.size ?: 0}")

@@ -55,13 +55,17 @@ class RestaurantsFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(RestaurantsViewModel::class.java)
         restaurants = ArrayList()
-        adapter = RestaurantRecyclerViewAdapter(restaurants, mListener)
+        adapter = RestaurantRecyclerViewAdapter(arrayListOf(), mListener)
         r_recycler.layoutManager = GridLayoutManager(view.context, 2)
         r_recycler.adapter = adapter
 
         search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+                if(query != null) {
+                    Log.d(TAG, query)
+                    adapter.search(query, restaurants)
+                }
+                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -86,7 +90,7 @@ class RestaurantsFragment : Fragment() {
         if (context is OnListFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context?.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnListFragmentInteractionListener")
         }
     }
 
