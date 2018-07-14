@@ -117,7 +117,14 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
 
     private fun updateUi(table: Table?) {
         this.table = table
-        if(table == null) return
+        if(table == null || table.occupants.isEmpty()) {
+            no_occupants.visibility = View.VISIBLE
+            main_view.visibility = View.GONE
+            return
+        } else {
+            no_occupants.visibility = View.GONE
+            main_view.visibility = View.VISIBLE
+        }
         table_name.text = "TABLE ${table.id}"
         occupantAdapter.update(table.occupants)
         ordersAdapter.update(table.orders)
