@@ -51,6 +51,13 @@ public class TablesDataSource extends DataSource<Table> {
                     Log.d(TAG, doc.getId());
                     Table t = doc.toObject(Table.class);
                     t.setId(doc.getId());
+                    for (int i = 0; i < dataList.size(); i++) {
+                        Table tb = dataList.get(i);
+                        if(tb.getId().equals(t.getId())) {
+                            dataList.remove(i);
+                            break;
+                        }
+                    }
                     dataList.add(t);
                     liveData.postValue(dataList);
                 }

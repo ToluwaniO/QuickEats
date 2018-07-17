@@ -16,10 +16,8 @@ import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_table.*
 import kotlinx.android.synthetic.main.table_occupant_layout.*
 import kotlinx.android.synthetic.main.table_order_item_layout.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.startActivityForResult
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
+import org.jetbrains.anko.design.snackbar
 import toluog.quickeats.R.id.*
 import toluog.quickeats.model.Order
 import toluog.quickeats.model.Restaurant
@@ -35,7 +33,6 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
     private var table: Table? = null
     private var occupantAdapter = InnerAdapter(arrayListOf())
     private var ordersAdapter = InnerAdapter(arrayListOf())
-    private var fabExpanded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +49,13 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
         Glide.with(this).load(restaurant.imageUrl).into(restaurant_logo)
 
         pay_now.setOnClickListener {
-            payNow()
+            if(table?.orders?.isEmpty() != false) {
+                snackbar(container, "You haven't made an order")
+                return@setOnClickListener
+            }
+            startActivityForResult(intentFor<OrderReviewActivity>().apply {
+                putExtra("table", table)
+            }, CardsActivity.CARD_REQUEST_CODE)
         }
 
         viewModel = ViewModelProviders.of(this, TableViewModelFactory(restaurant.id))
@@ -92,27 +95,15 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == CardsActivity.CARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            toast("Valid card!")
+            toast("Payment successful")
+            val user = FirebaseManager.user()
+            viewModel?.updateOccupants(restaurant.id, tableId, table.apply {
+                this?.occupants?.remove(user)
+            })
+            finish()
         } else {
-            toast("Could not get card")
+            toast("Payment failed")
         }
-    }
-
-    private fun payNow() {
-        val t = table ?: return
-        var toPay = 0.0
-        t.orders.forEach {
-            toPay += it.price * it.quantity
-        }
-
-        alert("You bill is $$toPay. Are you ready to pay?") {
-            positiveButton("YES") {
-                startActivityForResult(intentFor<CardsActivity>(), CardsActivity.CARD_REQUEST_CODE)
-            }
-            negativeButton("NO") {
-                it.dismiss()
-            }
-        }.show()
     }
 
     private fun updateUi(table: Table?) {

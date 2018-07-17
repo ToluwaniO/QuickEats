@@ -87,14 +87,15 @@ class TablesActivity : AppCompatActivity() {
             : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
             fun updateUi(table: Table) {
+                table.orders.forEach {
+                    table.total += it.quantity * it.price
+                }
                 table_name.text = "TABLE " + table.id
                 if (table.occupants.isNotEmpty()) {
                     occupied_state.text = "OCCUPIED"
                 } else {
                     occupied_state.text = "FREE"
-                }
-                table.orders.forEach {
-                    table.total += it.quantity * it.price
+                    table.total = 0.0
                 }
                 total_text.text = "$" + table.total
 

@@ -22,9 +22,10 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".TableActivity"/>
+        <activity android:name=".TableActivity" />
         <activity android:name=".CardsActivity" />
-        <activity android:name=".AddCardActivity"></activity>
+        <activity android:name=".AddCardActivity" />
+        <activity android:name=".OrderReviewActivity"></activity>
     </application>
 
 </manifest>

@@ -27,10 +27,9 @@ class CardsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cards)
-
         card_recycler.layoutManager = LinearLayoutManager(this)
         card_recycler.adapter = adapter
-
+        updateView()
         add_fab.setOnClickListener {
             val intent = Intent(this@CardsActivity, AddCardActivity::class.java)
             startActivityForResult(intent, CARD_REQUEST_CODE)
@@ -42,6 +41,15 @@ class CardsActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun updateView() {
+        if(cards.isEmpty()) {
+            no_cards.visibility = View.VISIBLE
+        } else {
+            no_cards.visibility = View.GONE
+            adapter.notifyDataSetChanged()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == CARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -49,7 +57,7 @@ class CardsActivity : AppCompatActivity() {
             Log.d(TAG, "$card")
             if(card != null) {
                 cards.add(card)
-                adapter.notifyDataSetChanged()
+                updateView()
             }
         }
     }
