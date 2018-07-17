@@ -25,6 +25,10 @@ public class TablesViewModel extends ViewModel {
     public void updateOccupants(String rId, String tId, Table table) {
         Log.d(TAG, "addOccupant");
         repository.updateOccupants(rId, tId, table);
+        if(table.getOccupants().size() == 0) {
+            table.getOrders().clear();
+            updateOrders(rId, tId, table);
+        }
     }
 
     public void updateOrders(String rId, String tId, Table table) {

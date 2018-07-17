@@ -1,6 +1,10 @@
 package toluog.quickeats.model
 
-data class User(var uid: String = "", var email: String = "", var displayName: String = "") {
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class User(var uid: String = "", var email: String = "", var displayName: String = ""): Parcelable {
     fun toMap() = mapOf<Any,Any>(
             "uid" to uid,
             "email" to email,
