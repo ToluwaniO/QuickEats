@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.SearchView
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +39,21 @@ class RestaurantsFragment : Fragment() {
     private lateinit var viewModel: RestaurantsViewModel
     private lateinit var adapter: RestaurantRecyclerViewAdapter
 
+    private val watcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if(s != null) {
+                adapter.search(s.toString(), restaurants)
+            }
+        }
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,25 +76,7 @@ class RestaurantsFragment : Fragment() {
         r_recycler.layoutManager = GridLayoutManager(view.context, 2)
         r_recycler.adapter = adapter
 
-        search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if(query != null) {
-                    Log.d(TAG, query)
-                    adapter.search(query, restaurants)
-                }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if(newText != null) {
-                    Log.d(TAG, newText)
-                    adapter.search(newText, restaurants)
-                    return true
-                }
-                return false
-            }
-
-        })
+        search_view.addTextChangedListener(watcher)
 
 
         viewModel.restaurants.observe(this, Observer { restaurants ->
