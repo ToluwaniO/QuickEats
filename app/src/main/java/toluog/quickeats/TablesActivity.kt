@@ -27,7 +27,6 @@ import android.support.v7.widget.DividerItemDecoration.VERTICAL
 class TablesActivity : AppCompatActivity() {
 
     private val TAG = TablesActivity::class.java.simpleName
-
     private lateinit var restaurant: Restaurant
     private val tables = arrayListOf<Table>()
     private lateinit var viewModel: TablesViewModel

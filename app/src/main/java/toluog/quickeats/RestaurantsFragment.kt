@@ -5,14 +5,13 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.SearchView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 
 import java.util.ArrayList
 
@@ -68,20 +67,23 @@ class RestaurantsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         viewModel = ViewModelProviders.of(this).get(RestaurantsViewModel::class.java)
         restaurants = ArrayList()
-        adapter = RestaurantRecyclerViewAdapter(arrayListOf(), mListener)
-        r_recycler.layoutManager = GridLayoutManager(view.context, 2)
+        adapter = RestaurantRecyclerViewAdapter(arrayListOf(), activity!!)
+        r_recycler.layoutManager = GridLayoutManager(view.context, 3)
         r_recycler.adapter = adapter
 
-        search_view.addTextChangedListener(watcher)
+        //search_view.addTextChangedListener(watcher)
 
 
         viewModel.restaurants.observe(this, Observer { restaurants ->
             updateUi(restaurants)
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.main, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onAttach(context: Context?) {
