@@ -1,5 +1,6 @@
 package toluog.quickeats
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,11 +16,19 @@ import toluog.quickeats.model.Restaurant
  * [RecyclerView.Adapter] that can display a [] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class RestaurantRecyclerViewAdapter(private val restaurants: ArrayList<Restaurant>,
-                                    private val mListener: OnListFragmentInteractionListener?)
+class RestaurantRecyclerViewAdapter(private val restaurants: ArrayList<Restaurant>, val context: Context)
     : RecyclerView.Adapter<RestaurantRecyclerViewAdapter.ViewHolder>() {
 
+    interface RestaurantListener {
+        fun onClicked(restaurant: Restaurant)
+    }
+
     private val TAG = RestaurantRecyclerViewAdapter::class.java.simpleName
+    private var listener: RestaurantListener
+
+    init {
+        listener = context as RestaurantListener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -28,7 +37,7 @@ class RestaurantRecyclerViewAdapter(private val restaurants: ArrayList<Restauran
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(restaurants[position], mListener)
+        holder.bind(restaurants[position], listener)
     }
 
     override fun getItemCount() = restaurants.size
@@ -61,12 +70,12 @@ class RestaurantRecyclerViewAdapter(private val restaurants: ArrayList<Restauran
     inner class ViewHolder(override val containerView: View)
         : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-        internal fun bind(restaurant: Restaurant, listener: OnListFragmentInteractionListener?) {
+        internal fun bind(restaurant: Restaurant, listener: RestaurantListener) {
             restaurant_name.text = restaurant.name
             Glide.with(itemView.context)
                     .load(restaurant.imageUrl)
                     .into(restaurant_image)
-            itemView.setOnClickListener { listener?.restaurantClicked(restaurant) }
+            itemView.setOnClickListener { listener.onClicked(restaurant) }
         }
 
         override fun toString(): String {

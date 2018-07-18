@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,24 +17,39 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
+import org.jetbrains.annotations.NotNull;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import toluog.quickeats.model.Restaurant;
 
 public class MainActivity extends AppCompatActivity
-        implements RestaurantsFragment.OnListFragmentInteractionListener {
+        implements RestaurantRecyclerViewAdapter.RestaurantListener,
+        RestaurantsFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.fragment_frame)
     FrameLayout fragmentFrame;
+    MaterialSearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
         ButterKnife.bind(this);
-
+        searchView = findViewById(R.id.search_view);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_frame,
                 RestaurantsFragment.Companion.newInstance(2)).commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+
+        return true;
     }
 
     @Override
@@ -50,24 +66,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void restaurantClicked(Restaurant restaurant) {
+    public void onClicked(@NotNull Restaurant restaurant) {
         Intent intent = new Intent(MainActivity.this, TablesActivity.class);
         intent.putExtra("restaurant", restaurant);
         startActivity(intent);
+    }
+
+    @Override
+    public void restaurantClicked(@NotNull Restaurant restaurant) {
+
     }
 }

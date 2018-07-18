@@ -41,6 +41,13 @@ public class RestaurantsDataSource extends DataSource<Restaurant> {
                 for (QueryDocumentSnapshot doc : snapshots) {
                     Restaurant r = doc.toObject(Restaurant.class);
                     r.setId(doc.getId());
+                    for (int i = 0; i < dataList.size(); i++) {
+                        Restaurant rt = dataList.get(i);
+                        if(rt.getId().equals(r.getId())) {
+                            dataList.remove(i);
+                            break;
+                        }
+                    }
                     dataList.add(r);
                     liveData.postValue(dataList);
                 }
