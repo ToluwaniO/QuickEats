@@ -6,7 +6,7 @@ The payment process used by the majority of dine-in restaurants should aim to al
 
 ***What QuickEats Does***
 
-QuickEats is a mobile application designed to allow users to order food at dine in resturaunts, pay their bills, add tips, manage their payment methods, review their payment history and allows resturaunts to autocharge customers who have left the resturaunt without paying.
+QuickEats is a mobile application designed to allow users to order food at dine in restaurants, pay their bills, add tips, manage their payment methods, review their payment history and allows restaurants to autocharge customers who have left the restaurant without paying.
 
 ***Functionality*** 
 Login:
@@ -17,9 +17,9 @@ Adding a Payment Method:
 
 QuickEats allows users to add and use different payment mediums and select which payment method they want to use during each transaction.
 
-Selecting Which Resturuant + Placing an Order: 
+Selecting Which Restaurant + Placing an Order: 
 
-Once the user is logged in, a list of all the available resturuants are prompted. Once the user gets their table number from the waitress, they can select the desired resturaunt and select their assigned table. The user then needs to adds themselves to the table as an occupant and make their own order including any other orders they want to split. 
+Once the user is logged in, a list of all the available restaurants are prompted. Once the user gets their table number from the waitress, they can select the desired restaurant and select their assigned table. The user then needs to adds themselves to the table as an occupant and make their own order including any other orders they want to split. 
 
 Paying Your Bill: 
 
@@ -43,4 +43,5 @@ Users can review and view their past payments and check the amount they paid dur
 
 Logout: 
 
-Users can logout by selecting "Logout" in the compressed menu. 
+Users can Log out by selecting "Log out" in the compressed menu. 
+
