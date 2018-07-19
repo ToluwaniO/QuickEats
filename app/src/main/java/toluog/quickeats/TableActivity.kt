@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -18,7 +17,6 @@ import kotlinx.android.synthetic.main.table_occupant_layout.*
 import kotlinx.android.synthetic.main.table_order_item_layout.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.snackbar
-import toluog.quickeats.R.id.*
 import toluog.quickeats.model.Order
 import toluog.quickeats.model.Restaurant
 import toluog.quickeats.model.Table
@@ -49,14 +47,16 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
 
         Glide.with(this).load(restaurant.imageUrl).into(restaurant_logo)
 
-        pay_now.setOnClickListener {
-            if(table?.orders?.isEmpty() != false) {
-                snackbar(container, "You haven't made an order")
-                return@setOnClickListener
-            }
-            startActivityForResult(intentFor<OrderReviewActivity>().apply {
-                putExtra("table", table)
-            }, CardsActivity.CARD_REQUEST_CODE)
+        order_fab.setOnClickListener {
+            OrderItemFragment().show(supportFragmentManager, null)
+        }
+
+        join_button.setOnClickListener {
+            addOccupant()
+        }
+
+        pay_button.setOnClickListener {
+            payNow()
         }
 
         viewModel = ViewModelProviders.of(this, TableViewModelFactory(restaurant.id))
@@ -76,21 +76,42 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            android.R.id.home -> onBackPressed()
-            R.id.menu_add_occupant -> {
-                Log.d(TAG, "Join fab clicked")
-                val user = FirebaseManager.user()
-                viewModel?.updateOccupants(restaurant.id, tableId, table.apply {
-                    this?.occupants?.add(user)
-                })
+//    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+//        when(item?.itemId) {
+//            android.R.id.home -> onBackPressed()
+//            R.id.action_exit -> {
+//                viewModel?.updateOccupants(restaurant.id, tableId, table?.apply {
+//                    this.occupants.remove(FirebaseManager.user())
+//                })
+//                finish()
+//            }
+//            R.id.action_pay -> {
+//
+//            }
+//        }
+//        return true
+//    }
+
+    private fun addOccupant() {
+        Log.d(TAG, "Join fab clicked")
+        val user = FirebaseManager.user()
+        viewModel?.updateOccupants(restaurant.id, tableId, table.apply {
+            if(this?.occupants?.contains(user) == false) {
+                this.occupants.add(user)
+            } else {
+                snackbar(container, "You're already on this table")
             }
-            R.id.menu_add_order -> {
-                OrderItemFragment().show(supportFragmentManager, null)
-            }
+        })
+    }
+
+    private fun payNow() {
+        if(table?.orders?.isEmpty() != false) {
+            snackbar(container, "You haven't made an order")
+            return
         }
-        return true
+        startActivityForResult(intentFor<OrderReviewActivity>().apply {
+            putExtra("table", table)
+        }, CardsActivity.CARD_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -111,10 +132,12 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
         this.table = table
         if(table == null || table.occupants.isEmpty()) {
             no_occupants.visibility = View.VISIBLE
+            join_button.visibility = View.VISIBLE
             main_view.visibility = View.GONE
             return
         } else {
             no_occupants.visibility = View.GONE
+            join_button.visibility = View.GONE
             main_view.visibility = View.VISIBLE
         }
         table_name.text = "TABLE ${table.id}"
@@ -128,8 +151,15 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
     }
 
     override fun onDone(order: Order) {
-        table?.orders?.add(order)
-        viewModel?.updateOrders(restaurant.id, tableId, table)
+        alert("Are you sure you want to order ${order.name}?") {
+            positiveButton("YES") {
+                table?.orders?.add(order)
+                viewModel?.updateOrders(restaurant.id, tableId, table)
+            }
+            negativeButton("NO") {
+                it.dismiss()
+            }
+        }.show()
     }
 
     inner class InnerAdapter(var items: ArrayList<Any>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {

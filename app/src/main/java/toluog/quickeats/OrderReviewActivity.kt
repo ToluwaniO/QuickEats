@@ -9,6 +9,7 @@ import android.support.v7.widget.DividerItemDecoration.VERTICAL
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.extensions.LayoutContainer
@@ -26,6 +27,7 @@ class OrderReviewActivity : AppCompatActivity() {
     private lateinit var table: Table
     private val adapter = ReceiptAdapter()
     private val payTypes = listOf("Split bill", "Pay all")
+    private val checkedSet = HashSet<Int>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,31 +38,25 @@ class OrderReviewActivity : AppCompatActivity() {
         receipt_recycler.adapter = adapter
         receipt_recycler.layoutManager = LinearLayoutManager(this)
         receipt_recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
-        var total = 0.0
-        table.orders.forEach {
-            total += it.price * it.quantity
-        }
-        total_value_view.text = "$$total"
         adapter.notifyDataSetChanged()
 
         pay_button.setOnClickListener {
-            processPayType()
+            payNow()
         }
     }
-     private fun processPayType() {
-         selector("How would you like to pay?", payTypes) { _, i ->
-             if(i == 0) {
-                 payNow(true)
-             } else {
-                 payNow()
-             }
-         }
-     }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            android.R.id.home -> onBackPressed()
+        }
+        return true
+    }
 
     private fun payNow(split: Boolean = false) {
         var toPay = 0.0
-        table.orders.forEach {
-            toPay += it.price * it.quantity
+        checkedSet.forEach {
+            val ord = table.orders[it]
+            toPay += ord.price * ord.quantity
         }
         if(split) toPay /= table.occupants.size
 
@@ -85,6 +81,15 @@ class OrderReviewActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateTotal() {
+        var toPay = 0.0
+        checkedSet.forEach {
+            val ord = table.orders[it]
+            toPay += ord.price * ord.quantity
+        }
+        total_value_view.text = "$$toPay"
+    }
+
     inner class ReceiptAdapter: RecyclerView.Adapter<ReceiptAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.receipt_item_layout, parent,
@@ -95,13 +100,13 @@ class OrderReviewActivity : AppCompatActivity() {
         override fun getItemCount() = table.orders.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(table.orders[position])
+            holder.bind(table.orders[position], position)
         }
 
         inner class ViewHolder(override val containerView: View)
             : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-            fun bind(order: Order) {
+            fun bind(order: Order, position: Int) {
                 val quan = if(order.quantity == 1) {
                     "${order.quantity} item"
                 } else {
@@ -111,6 +116,14 @@ class OrderReviewActivity : AppCompatActivity() {
                 item_name.text = order.name
                 item_quantity.text = quan
                 item_price.text = priceText
+                check_box.setOnCheckedChangeListener { _, isChecked ->
+                    if(isChecked) {
+                        checkedSet.add(position)
+                    } else {
+                        checkedSet.remove(position)
+                    }
+                    updateTotal()
+                }
             }
 
         }
