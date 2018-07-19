@@ -28,6 +28,8 @@ class FirebaseManager {
             }
         }
 
+        fun signOut() = auth.signOut()
+
         fun addCard(card: Card) {
             val fStore = FirebaseFirestore.getInstance()
             fStore.collection("users").document(user().uid).set(card)

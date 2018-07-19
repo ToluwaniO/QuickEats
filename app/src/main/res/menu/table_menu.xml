@@ -2,14 +2,4 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/menu_add_occupant"
-        android:icon="@drawable/ic_person_add"
-        android:title="Add Occupant"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/menu_add_order"
-        android:icon="@drawable/ic_receipt"
-        android:title="Add order"
-        app:showAsAction="always" />
 </menu>

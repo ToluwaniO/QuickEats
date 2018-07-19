@@ -42,6 +42,7 @@ class CardsActivity : AppCompatActivity() {
         }
 
         viewModel.getCards()?.observe(this, Observer {
+            cards.clear()
             it?.forEach {
                 val card = it as Card?
                 if(card != null) {
