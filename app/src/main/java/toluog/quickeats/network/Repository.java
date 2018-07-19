@@ -5,6 +5,8 @@ import android.util.Log;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
+import toluog.quickeats.FirebaseManager;
 import toluog.quickeats.model.Restaurant;
 import toluog.quickeats.model.Table;
 import toluog.quickeats.network.RestaurantsDataSource;
@@ -46,11 +48,13 @@ public class Repository {
             source = new RestaurantsDataSource();
         } else if(repoType == RepoType.TABLE) {
             source = new TablesDataSource(restaurantId);
+        } else {
+            source = new CardDataSource(FirebaseManager.user().getUid());
         }
     }
 
     public enum RepoType {
-        RESTAURANT, TABLE
+        RESTAURANT, TABLE, CARD
     }
 
 }

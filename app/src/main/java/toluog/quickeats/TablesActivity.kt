@@ -3,6 +3,7 @@ package toluog.quickeats
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import toluog.quickeats.model.Table
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.DividerItemDecoration.HORIZONTAL
 import android.support.v7.widget.DividerItemDecoration.VERTICAL
+import android.view.MenuItem
 
 
 class TablesActivity : AppCompatActivity() {
@@ -35,6 +37,7 @@ class TablesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tables)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         restaurant = intent.extras.get("restaurant") as Restaurant
         Log.d(TAG, restaurant.id)
@@ -65,6 +68,13 @@ class TablesActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            android.R.id.home -> onBackPressed()
+        }
+        return true
+    }
+
     internal inner class TablesAdapter : RecyclerView.Adapter<TablesAdapter.ViewHolder>() {
         private val adapterList = arrayListOf<Table>()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -91,9 +101,11 @@ class TablesActivity : AppCompatActivity() {
                 }
                 table_name.text = "TABLE " + table.id
                 if (table.occupants.isNotEmpty()) {
+                    occupied_state.setTextColor(Color.parseColor("#ff0000"))
                     occupied_state.text = "OCCUPIED"
                 } else {
-                    occupied_state.text = "FREE"
+                    occupied_state.setTextColor(Color.parseColor("#008000"))
+                    occupied_state.text = "AVAILABLE"
                     table.total = 0.0
                 }
                 total_text.text = "$" + table.total

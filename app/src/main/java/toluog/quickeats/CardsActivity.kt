@@ -1,6 +1,8 @@
 package toluog.quickeats
 
 import android.app.Activity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -13,7 +15,9 @@ import android.view.ViewGroup
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_cards.*
 import kotlinx.android.synthetic.main.card_item_layout.*
+import org.jetbrains.anko.act
 import toluog.quickeats.model.Card
+import toluog.quickeats.model.User
 
 class CardsActivity : AppCompatActivity() {
 
@@ -23,17 +27,29 @@ class CardsActivity : AppCompatActivity() {
     private val TAG = CardsActivity::class.java.simpleName
     private val cards = arrayListOf<Card>()
     private var adapter = CardAdapter()
+    private lateinit var viewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cards)
+        viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
         card_recycler.layoutManager = LinearLayoutManager(this)
         card_recycler.adapter = adapter
         updateView()
-        add_fab.setOnClickListener {
+        add_card.setOnClickListener {
             val intent = Intent(this@CardsActivity, AddCardActivity::class.java)
             startActivityForResult(intent, CARD_REQUEST_CODE)
         }
+
+        viewModel.getCards()?.observe(this, Observer {
+            it?.forEach {
+                val card = it as Card?
+                if(card != null) {
+                    cards.add(card)
+                }
+            }
+            updateView()
+        })
     }
 
     fun clicked() {
