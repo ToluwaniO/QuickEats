@@ -33,9 +33,12 @@ class AddCardActivity : AppCompatActivity() {
 
     private fun save() {
         if(validate()) {
+            val card = getCard()
             Log.d(TAG, "Valid card")
+            FirebaseManager.addCard(card)
+            Util.setBoolPref(this, Util.FIRST_OPEN, false)
             setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra("CARD", getCard())
+                putExtra("CARD", card)
             })
             finish()
         }

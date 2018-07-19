@@ -37,6 +37,7 @@ class TableActivity : AppCompatActivity(), OrderItemFragment.OrderListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_table)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         restaurant = intent.extras.get("restaurant") as Restaurant
         tableId = intent.getStringExtra("tableId")
         occupants_recycler.layoutManager = LinearLayoutManager(this,

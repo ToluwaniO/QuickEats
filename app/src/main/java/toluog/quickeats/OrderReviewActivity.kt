@@ -31,7 +31,7 @@ class OrderReviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_review)
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         table = intent.extras.getParcelable("table")
         receipt_recycler.adapter = adapter
         receipt_recycler.layoutManager = LinearLayoutManager(this)
