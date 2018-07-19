@@ -12,6 +12,8 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView
 
 import kotlinx.android.synthetic.main.activity_main_v2.*
 import kotlinx.android.synthetic.main.content_main_activity_v2.*
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
 import toluog.quickeats.model.Restaurant
 import java.util.ArrayList
 
