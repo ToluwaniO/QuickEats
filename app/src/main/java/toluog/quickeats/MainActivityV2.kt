@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.Menu
+import android.view.MenuItem
 import com.miguelcatalan.materialsearchview.MaterialSearchView
 
 import kotlinx.android.synthetic.main.activity_main_v2.*
@@ -61,6 +62,25 @@ RestaurantsFragment.OnListFragmentInteractionListener{
         val item = menu.findItem(R.id.action_search)
         search_view.setMenuItem(item)
 
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.action_logout -> {
+                FirebaseManager.signOut()
+                FirebaseManager.startSignIn(this)
+            }
+            R.id.action_add_card -> {
+                startActivity(intentFor<CardsActivity>())
+            }
+            R.id.action_report -> {
+                startActivity(intentFor<ReportProblemActivity>())
+            }
+            R.id.action_faq -> {
+                startActivity(intentFor<FaqActivity>())
+            }
+        }
         return true
     }
 
