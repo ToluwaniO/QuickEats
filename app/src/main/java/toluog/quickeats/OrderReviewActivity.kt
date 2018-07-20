@@ -8,6 +8,8 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.DividerItemDecoration.VERTICAL
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -28,6 +30,32 @@ class OrderReviewActivity : AppCompatActivity() {
     private val adapter = ReceiptAdapter()
     private val payTypes = listOf("Split bill", "Pay all")
     private val checkedSet = HashSet<Int>()
+    private var tipPercentage  = 0.0
+    private val watcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if(s != null) {
+                val word = s.toString()
+                tipPercentage = if(word.isNotBlank() && word.isNotEmpty()) {
+                    word.toDouble()
+                } else {
+                    0.0
+                }
+                if(tipPercentage > 100) {
+                    tip_view.error = "Tip can not be more than 100%"
+                } else {
+                    updateTotal()
+                }
+            }
+        }
+
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,9 +68,12 @@ class OrderReviewActivity : AppCompatActivity() {
         receipt_recycler.addItemDecoration(DividerItemDecoration(this, VERTICAL))
         adapter.notifyDataSetChanged()
 
+        tip_view.addTextChangedListener(watcher)
+
         pay_button.setOnClickListener {
             payNow()
         }
+        updateTotal()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -87,7 +118,8 @@ class OrderReviewActivity : AppCompatActivity() {
             val ord = table.orders[it]
             toPay += ord.price * ord.quantity
         }
-        total_value_view.text = "$$toPay"
+        val tip = tipPercentage * toPay / 100
+        total_value_view.text = "$${tip + toPay}"
     }
 
     inner class ReceiptAdapter: RecyclerView.Adapter<ReceiptAdapter.ViewHolder>() {
