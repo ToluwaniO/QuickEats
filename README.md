@@ -37,11 +37,13 @@ Modify Payment Methods:
 
 Users also have the option to modify/add or delete a payment method by going to the compressed menu and selecting "Manage Payment Methods" 
 
-Review Payment History: 
-
-Users can review and view their past payments and check the amount they paid during each transaction. 
-
 Logout: 
 
 Users can Log out by selecting "Log out" in the compressed menu. 
+
+Adding a tip: 
+
+Once a user is ready to checkout, they can enter the tip amount. 
+
+
 
